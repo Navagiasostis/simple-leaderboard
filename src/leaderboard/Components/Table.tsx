@@ -7,7 +7,7 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Contestant } from '../Models/Contestant';
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
@@ -40,44 +40,62 @@ function createData(
   return { name, calories, fat, carbs, protein };
 }
 
-const rows = [
-  createData('Frozen yoghurt', 159, 6.0, 24, 4.0),
-  createData('Ice cream sandwich', 237, 9.0, 37, 4.3),
-  createData('Eclair', 262, 16.0, 24, 6.0),
-  createData('Cupcake', 305, 3.7, 67, 4.3),
-  createData('Gingerbread', 356, 16.0, 49, 3.9),
-];
-
 type LeaderboardProps = {
   contestants: Contestant[]
   setContestants: React.Dispatch<React.SetStateAction<Contestant[]>>
+  rounds: number[]
+  setRounds: React.Dispatch<React.SetStateAction<number[]>>
 }
 
 
-export const LeaderboardTable = ({contestants, setContestants}: LeaderboardProps) => {
+export const LeaderboardTable = ({contestants, setContestants, rounds, setRounds}: LeaderboardProps) => {
 
-  useEffect(() => { 
-    console.log("test") 
-  }, [rows]);
+  const addContestant = (contestantName: string, contestantNumber: number) => {
+    const newContestant: Contestant = {
+      id: crypto.randomUUID(),
+      name: contestantName,
+      number: contestantNumber,
+      points: 0
+    };
+    setContestants([...contestants, newContestant]);
+  };
+
+  const handleNameChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    index: number
+  ) => {
+    const newContestants = [...contestants];
+    newContestants[index].name = e.target.value;
+    setContestants(newContestants);
+  };
+
+  const handlePointsChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    index: number
+  ) => {
+    const newContestants = [...contestants];
+    newContestants[index].points = Number(e.target.value);
+    setContestants(newContestants);
+  };
 
   return (
     <TableContainer component={Paper}>
-      <Table sx={{ minWidth: 700 }} aria-label="customized table">
+      <Table aria-label="customized table">
         <TableHead>
           <TableRow>
-            <StyledTableCell>Number</StyledTableCell>
-            <StyledTableCell align="right">Name</StyledTableCell>
-            <StyledTableCell align="right">Points</StyledTableCell>
+            <StyledTableCell align="left">Position</StyledTableCell>
+            <StyledTableCell align="left">Name</StyledTableCell>
+            {rounds.map((round, index) => (<StyledTableCell align="left">{round}</StyledTableCell>))}
+            <StyledTableCell align="left">Total Points</StyledTableCell>
           </TableRow>
         </TableHead>
         <TableBody>
-          {contestants.map((contestant) => (
-            <StyledTableRow key={contestant.name}>
-              <StyledTableCell component="th" scope="row">
-                {contestant.number}
-              </StyledTableCell>
-              <StyledTableCell align="right">{contestant.name}</StyledTableCell>
-              <StyledTableCell align="right">{contestant.points}</StyledTableCell>
+          {contestants.map((contestant, index) => (
+            <StyledTableRow key={contestant.id} sx={{maxWidth:"200px"}}>
+              <StyledTableCell align="left">{index + 1}</StyledTableCell>
+              <StyledTableCell align="left">{contestant.name}</StyledTableCell>
+              {rounds.map((round, index) => (<StyledTableCell align="left">{round}</StyledTableCell>))}
+              <StyledTableCell align="left">{contestant.points}</StyledTableCell>
             </StyledTableRow>
           ))}
         </TableBody>
