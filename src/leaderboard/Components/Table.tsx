@@ -9,6 +9,11 @@ import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import { useEffect, useState } from 'react';
 import { Contestant } from '../Models/Contestant';
+import { Round } from '../Models/Round';
+import NameInputField from './NameInputField';
+import NumberInputField from './NumberInputField';
+import { PointsPerPosition } from '../Models/PointsPerPosition';
+import { RoundData } from '../Models/RoundData';
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -43,40 +48,69 @@ function createData(
 type LeaderboardProps = {
   contestants: Contestant[]
   setContestants: React.Dispatch<React.SetStateAction<Contestant[]>>
-  rounds: number[]
-  setRounds: React.Dispatch<React.SetStateAction<number[]>>
+  rounds: Round[]
+  setRounds: React.Dispatch<React.SetStateAction<Round[]>>
+  pointsPerPosition: PointsPerPosition[]
+  setPointsPerPosition: React.Dispatch<React.SetStateAction<PointsPerPosition[]>>
 }
 
 
-export const LeaderboardTable = ({contestants, setContestants, rounds, setRounds}: LeaderboardProps) => {
+export const LeaderboardTable = ({contestants, setContestants, rounds, setRounds, pointsPerPosition, setPointsPerPosition}: LeaderboardProps) => {
 
   const addContestant = (contestantName: string, contestantNumber: number) => {
     const newContestant: Contestant = {
       id: crypto.randomUUID(),
       name: contestantName,
-      number: contestantNumber,
-      points: 0
+      points: 0,
+      roundData: []
     };
     setContestants([...contestants, newContestant]);
   };
 
   const handleNameChange = (
-    e: React.ChangeEvent<HTMLInputElement>,
-    index: number
+    name: string,
+    contestantId: string,
   ) => {
-    const newContestants = [...contestants];
-    newContestants[index].name = e.target.value;
-    setContestants(newContestants);
+    const contestantToEdit = contestants.find(contestant => contestant.id == contestantId)!;
+    const updatedContestants = contestants.map((person) =>
+      person.id === contestantToEdit.id ? { ...person, name: name} : person
+    );
+    setContestants(updatedContestants);
   };
 
-  const handlePointsChange = (
-    e: React.ChangeEvent<HTMLInputElement>,
-    index: number
+  const handleRoundPositionChange = (
+    updatedPosition: number,
+    contestantId: string,
+    roundId: string
   ) => {
-    const newContestants = [...contestants];
-    newContestants[index].points = Number(e.target.value);
-    setContestants(newContestants);
+    const contestantToEdit = contestants.find(contestant => contestant.id == contestantId)!;
+    const updatedValues = updatePoints(contestantToEdit, updatedPosition, roundId);
+    const updatedContestants = contestants.map((person) =>
+      person.id === contestantToEdit.id ? { ...person, points: updatedValues.points, roundData: updatedValues.updatedRoundData} : person
+    );
+    setContestants(updatedContestants);
   };
+
+  const updatePoints = (contestant: Contestant, updatedPosition: number, roundId: string) => {
+    const currentRoundData = contestant.roundData.find(data => data.roundId == roundId)!;
+    const previousPosition = pointsPerPosition.find(pos => currentRoundData.position == pos.position);
+    const newPosition = pointsPerPosition.find(pos => updatedPosition == pos.position);
+
+    const updatedRoundData: RoundData[] = contestant.roundData;
+
+    let points = contestant.points;
+    debugger
+    if(previousPosition && newPosition){
+      points = contestant.points - previousPosition.points + newPosition.points;
+      updatedRoundData.find(round => round.roundId == roundId)!.position = updatedPosition;
+      
+    } else if(newPosition){
+      points = contestant.points + newPosition.points;
+      updatedRoundData.find(round => round.roundId == roundId)!.position = updatedPosition;
+    }
+
+    return {points, updatedRoundData};
+  }
 
   return (
     <TableContainer component={Paper}>
@@ -85,16 +119,22 @@ export const LeaderboardTable = ({contestants, setContestants, rounds, setRounds
           <TableRow>
             <StyledTableCell align="left">Position</StyledTableCell>
             <StyledTableCell align="left">Name</StyledTableCell>
-            {rounds.map((round, index) => (<StyledTableCell align="left">{round}</StyledTableCell>))}
+            {rounds.map((round, index) => (<StyledTableCell key={round.id} align="left">{round.name}</StyledTableCell>))}
             <StyledTableCell align="left">Total Points</StyledTableCell>
           </TableRow>
         </TableHead>
         <TableBody>
-          {contestants.map((contestant, index) => (
+          {contestants.map((contestant, constestantIndex) => (
             <StyledTableRow key={contestant.id} sx={{maxWidth:"200px"}}>
-              <StyledTableCell align="left">{index + 1}</StyledTableCell>
-              <StyledTableCell align="left">{contestant.name}</StyledTableCell>
-              {rounds.map((round, index) => (<StyledTableCell align="left">{round}</StyledTableCell>))}
+              <StyledTableCell align="left">{constestantIndex + 1}</StyledTableCell>
+              <StyledTableCell align="left"><NameInputField label={''} value={contestant.name} onChange={function (value: string): void {
+                handleNameChange(value, contestant.id)
+              } }/></StyledTableCell>
+              {rounds.map((round, roundIndex) => (<StyledTableCell align="left">{
+                <NumberInputField label={''} value={contestant.roundData.find(contestantRound => contestantRound.roundId == round.id)!.position} onChange={function (value: string): void {
+                  handleRoundPositionChange(Number(value), contestant.id, round.id)
+                }}/>
+              }</StyledTableCell>))}
               <StyledTableCell align="left">{contestant.points}</StyledTableCell>
             </StyledTableRow>
           ))}
