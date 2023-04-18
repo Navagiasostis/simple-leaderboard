@@ -29,8 +29,16 @@
 .points_cell{
     position: sticky;
     white-space: nowrap;
-    right: 0px;
-    padding-left: 400px;
+    right: 50px;
     z-index: 100;
+    background-color: aliceblue;
+}
+
+.delete_cell{
+    position: sticky;
+    white-space: nowrap;
+    right: 0px;
+    z-index: 99;
+    min-width: 50px;
     background-color: aliceblue;
 }

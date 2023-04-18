@@ -16,6 +16,9 @@ import { RoundData } from '../Models/RoundData';
 import { Button, InputAdornment, makeStyles } from '@mui/material';
 import { ContestantRow } from './ContestantRow';
 import '../Styles/Global.css';
+import SortIcon from '@mui/icons-material/Sort';
+import PersonAddIcon from '@mui/icons-material/PersonAdd';
+import AddLocationAltIcon from '@mui/icons-material/AddLocationAlt';
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -57,8 +60,12 @@ export const LeaderboardTable = ({contestants, setContestants, rounds, pointsPer
 
   return (
     <>
-      <Button variant="outlined" onClick={sortParticipants}>Sort Participants</Button>
-      <Button variant="outlined" onClick={sortParticipants}>Add Round</Button>
+    <div style={{marginTop:"5px", marginBottom:"5px", justifyContent:"space-evenly", width:"100%", alignItems:"center", display:"flex", flexDirection:"row"}}>
+      <Button color="success" variant="contained" onClick={addContestant} startIcon={<PersonAddIcon/>}>Add Participant</Button>
+      <Button color="success" variant="contained" onClick={sortParticipants} startIcon={<AddLocationAltIcon/>}>Add Round</Button>
+      <Button color="secondary"  variant="contained" onClick={sortParticipants} startIcon={<SortIcon/>}>Sort Participants</Button>
+    </div>
+      
       <TableContainer component={Paper}>
         <Table aria-label="customized table">
           <TableHead>
@@ -66,7 +73,8 @@ export const LeaderboardTable = ({contestants, setContestants, rounds, pointsPer
               <StyledTableCell className='position_cell' align="center">Pos.</StyledTableCell>
               <StyledTableCell className='name_cell' align='center'>Name</StyledTableCell>
               {rounds.map((round, index) => (<StyledTableCell key={round.id} align="center">{round.name}</StyledTableCell>))}
-              <StyledTableCell className='points_cell' align="center">Total Points</StyledTableCell>
+              <StyledTableCell className='points_cell' align="center">Points</StyledTableCell>
+              <StyledTableCell className='delete_cell' align="center"></StyledTableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -82,7 +90,6 @@ export const LeaderboardTable = ({contestants, setContestants, rounds, pointsPer
           </TableBody>
         </Table>
       </TableContainer>
-      <Button variant="outlined" onClick={addContestant}>Add Participant</Button>
     </>
   );
 }
