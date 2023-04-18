@@ -1,0 +1,36 @@
+.position_cell{
+    position: sticky;
+    white-space: nowrap;
+    left: 0;
+    min-width: 40px;
+    z-index: 100;
+    background-color: aliceblue;
+    border-color: brown;
+    border: 5px 5px 5px 5px;
+}
+
+.name_cell{
+    position: sticky;
+    white-space: nowrap;
+    left: 45px;
+    min-width: 200px;
+    z-index: 100;
+    background-color: aliceblue;
+}
+
+.round_cell{
+    position: relative;
+    white-space: nowrap;
+    min-width: 60px;
+    z-index: 90;
+    background-color: aliceblue;
+}
+
+.points_cell{
+    position: sticky;
+    white-space: nowrap;
+    right: 0px;
+    padding-left: 400px;
+    z-index: 100;
+    background-color: aliceblue;
+}

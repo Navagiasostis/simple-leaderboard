@@ -1,8 +1,9 @@
-# Getting Started with Create React App
+# A simple leaderboard web application
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+This project has the simple purpose of allowing the creation of a leaderboard. Give the position of a driver and the system itself
+calculates the points won, so no quick maths need to be done by the people every time.
 
-## Available Scripts
+## REACT - Available Scripts
 
 In the project directory, you can run:
 
