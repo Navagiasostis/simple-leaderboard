@@ -29,6 +29,8 @@ function App() {
   const [rounds, setRounds] = useState<Round[]>(initialRounds);
   const [pointsPerPosition, setPointsPerPosition] = useState<PointsPerPosition[]>(initialPointsPerPosition);
 
+  //ISSUES: the update method on the ContestantRow doesnt work correctly. Check it out. Try to remove position 0/replace it with -
+
   // useEffect(() => {
   //   const numberOfAvailablePositions = contestants.length;
   //   const newPositions: PointsPerPosition[] = [];
