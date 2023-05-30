@@ -103,14 +103,19 @@ export const ContestantRow = ({contestant, position, contestants, setContestants
     
       const pickAdornment = (position: number) => {
         const currentPos = position.toString();
-        if(currentPos.endsWith("1")){
-          return "st"
+        if(currentPos.endsWith("0")){
+          return "-"
+        }
+        else if(currentPos.endsWith("1")){
+            return "st"
         }
         else if(currentPos.endsWith("2")){
           return "nd"
-        }else if(currentPos.endsWith("3")){
+        }
+        else if(currentPos.endsWith("3")){
           return "rd"
-        }else{
+        }
+        else{
           return "th"
         }
       }
@@ -122,15 +127,14 @@ export const ContestantRow = ({contestant, position, contestants, setContestants
     return (
         <>
             <StyledTableRow style={{overflow:"scroll"}} key={contestant.id} sx={{maxWidth:"200px"}}>
-                <StyledTableCell className='position_cell' align="center">{ position + 1}</StyledTableCell>
                 <StyledTableCell className='name_cell' align="center">
                     <NameInputField 
-                    label={'Name'} 
+                    label={(position + 1).toString() + pickAdornment(position + 1) } 
                     value={contestant.name} 
                     onChange={function (value: string): void {
                         handleNameChange(value, contestant.id)
                     }}
-                    additionalProps={{placeholder:"Participator's name", style:{}}}
+                    additionalProps={{placeholder:"Participator's name", InputLabelProps:{shrink:true} }}
                     />
                 </StyledTableCell>
                 {rounds.map((round, roundIndex) => (<StyledTableCell className='round_cell' align="center">{

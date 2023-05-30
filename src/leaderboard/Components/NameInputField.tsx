@@ -1,5 +1,6 @@
 import { FilledInputProps, InputProps, OutlinedInputProps, TextField, TextFieldProps } from "@mui/material";
 import React, { useState } from "react";
+import '../Styles/Global.css';
 
 interface NameInputFieldProps {
   label: string;

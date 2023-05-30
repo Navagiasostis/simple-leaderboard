@@ -1,19 +1,8 @@
-.position_cell{
-    position: sticky;
-    white-space: nowrap;
-    left: 0;
-    min-width: 40px;
-    z-index: 100;
-    background-color: aliceblue;
-    border-color: brown;
-    border: 5px 5px 5px 5px;
-}
-
 .name_cell{
     position: sticky;
     white-space: nowrap;
-    left: 45px;
-    min-width: 200px;
+    left: 0px;
+    min-width: 120px;
     z-index: 100;
     background-color: aliceblue;
 }
@@ -39,6 +28,9 @@
     white-space: nowrap;
     right: 0px;
     z-index: 99;
-    min-width: 50px;
     background-color: aliceblue;
+}
+
+.round_name_cell{
+    z-index: 1000;
 }
