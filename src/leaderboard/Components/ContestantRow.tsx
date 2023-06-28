@@ -52,6 +52,10 @@ export const ContestantRow = ({ contestant, position, contestants, setContestant
     setContestants(updatedContestants);
   };
 
+  React.useEffect(() => {
+    recalculatePoints();
+  }, [pointsPerPosition]);
+
   const handleRoundPositionChange = (updatedPosition: number, contestantId: string, roundId: string) => {
     const contestantToEdit = contestants.find((contestant) => contestant.id === contestantId)!;
     const updatedValues = updatePoints(contestantToEdit, updatedPosition, roundId);
@@ -61,6 +65,18 @@ export const ContestantRow = ({ contestant, position, contestants, setContestant
       );
       setContestants(updatedContestants);
     }
+  };
+
+  const recalculatePoints = () => {
+    const updatedContestants = contestants.map((person) => {
+      person.points = 0;
+      person.roundData.forEach((round) => {
+        person.points += pointsPerPosition.find((position) => position.position == round.position)!.points;
+      });
+      return person;
+    });
+
+    setContestants(updatedContestants);
   };
 
   const updatePoints = (contestant: Contestant, updatedPosition: number, roundId: string) => {

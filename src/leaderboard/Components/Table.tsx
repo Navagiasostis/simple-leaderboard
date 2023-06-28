@@ -87,13 +87,28 @@ export const LeaderboardTable = ({ contestants, setContestants, setRounds, round
     handleClose();
   };
 
+  const updatePoints = (points: PointsPerPosition, value: string) => {
+    const updatedPointsPerPosition = pointsPerPosition.map((pointData) => {
+      if (pointData.position == points.position) {
+        if (!isNaN(parseInt(value))) {
+          points.points = parseInt(value);
+        } else {
+          points.points = 0;
+        }
+        return points;
+      } else return pointData;
+    });
+
+    setPointsPerPosition(updatedPointsPerPosition);
+  };
+
   return (
     <>
       <div style={{ marginTop: "5px", marginBottom: "5px", justifyContent: "space-evenly", width: "100%", alignItems: "center", display: "flex", flexDirection: "row" }}>
         <Button color="info" variant="contained" onClick={addContestant} startIcon={<PersonAddIcon />}>
           Add Participant
         </Button>
-        <Button color="success" variant="contained" onClick={() => setPointsDialogOpen(true)} startIcon={<AddLocationAltIcon />}>
+        <Button color="success" variant="contained" onClick={() => setRoundDialogOpen(true)} startIcon={<AddLocationAltIcon />}>
           Add Round
         </Button>
         <Button color="secondary" variant="contained" onClick={sortParticipants} startIcon={<SortIcon />}>
@@ -118,7 +133,7 @@ export const LeaderboardTable = ({ contestants, setContestants, setRounds, round
                   fullWidth
                   variant="standard"
                   value={points.points}
-                  onChange={(event) => setRoundName(event.target.value)}
+                  onChange={(event) => updatePoints(points, event.target.value)}
                 />
               </div>
             ))}
@@ -147,7 +162,7 @@ export const LeaderboardTable = ({ contestants, setContestants, setRounds, round
           </DialogContent>
           <DialogActions>
             <Button onClick={handleClose}>Cancel</Button>
-            <Button onClick={addRound}>Add</Button>
+            <Button onClick={addRound}>Save settings</Button>
           </DialogActions>
         </Dialog>
       </div>
