@@ -1,21 +1,15 @@
 import * as React from "react";
 import { styled } from "@mui/material/styles";
-import Table from "@mui/material/Table";
-import TableBody from "@mui/material/TableBody";
 import TableCell, { tableCellClasses } from "@mui/material/TableCell";
-import TableContainer from "@mui/material/TableContainer";
-import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
-import Paper from "@mui/material/Paper";
-import { Contestant } from "../Models/Contestant";
-import { Round } from "../Models/Round";
 import NameInputField from "./NameInputField";
 import NumberInputField from "./NumberInputField";
-import { PointsPerPosition } from "../Models/PointsPerPosition";
-import { RoundData } from "../Models/RoundData";
-import { Button, IconButton, InputAdornment } from "@mui/material";
-import "../Styles/Global.css";
+import { IconButton, InputAdornment } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
+import { Contestant } from "../../Models/Contestant";
+import { PointsPerPosition } from "../../Models/PointsPerPosition";
+import { Round } from "../../Models/Round";
+import { RoundData } from "../../Models/RoundData";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
     [`&.${tableCellClasses.head}`]: {
