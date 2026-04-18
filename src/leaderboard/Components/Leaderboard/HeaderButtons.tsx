@@ -4,7 +4,7 @@ import SortIcon from "@mui/icons-material/Sort";
 import { Contestant } from "../../Models/Contestant";
 import { useContext } from "react";
 import { RaceDataContext } from "./Leaderboard";
-import PointsDialog from "./PointsDialog";
+import PointsDialog from "./Points/PointsDialog";
 import AddRound from "./AddRoundDialog";
 
 function HeaderButtons() {

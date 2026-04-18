@@ -2,8 +2,8 @@ import * as React from "react";
 import { styled } from "@mui/material/styles";
 import TableCell, { tableCellClasses } from "@mui/material/TableCell";
 import TableRow from "@mui/material/TableRow";
-import NameInputField from "./NameInputField";
-import NumberInputField from "./NumberInputField";
+import NameInputField from "./InputFields/NameInputField";
+import NumberInputField from "./InputFields/NumberInputField";
 import { IconButton, InputAdornment } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { Contestant } from "../../Models/Contestant";
@@ -40,208 +40,211 @@ type ContestantRowProps = {
     pointsPerPosition: PointsPerPosition[];
 };
 
-export const ContestantRow = ({
-    contestant,
-    position,
-    contestants,
-    setContestants,
-    rounds,
-    pointsPerPosition
-}: ContestantRowProps) => {
-    const handleNameChange = (name: string, contestantId: string) => {
-        const updatedContestants = contestants.map((person) =>
-            person.id === contestant.id ? { ...person, name: name } : person
-        );
-        setContestants(updatedContestants);
-    };
-
-    React.useEffect(() => {
-        recalculatePoints();
-    }, [pointsPerPosition]);
-
-    const handleRoundPositionChange = (
-        updatedPosition: number,
-        contestantId: string,
-        roundId: string
-    ) => {
-        const contestantToEdit = contestants.find(
-            (contestant) => contestant.id === contestantId
-        )!;
-        const updatedValues = updatePoints(
-            contestantToEdit,
-            updatedPosition,
-            roundId
-        );
-        if (updatedValues?.points && updatedValues.updatedRoundData) {
+export const ContestantRow = React.memo(
+    ({
+        contestant,
+        position,
+        contestants,
+        setContestants,
+        rounds,
+        pointsPerPosition
+    }: ContestantRowProps) => {
+        const handleNameChange = (name: string, contestantId: string) => {
             const updatedContestants = contestants.map((person) =>
-                person.id === contestantToEdit.id
-                    ? {
-                          ...person,
-                          points: updatedValues.points,
-                          roundData: updatedValues.updatedRoundData
-                      }
-                    : person
+                person.id === contestant.id ? { ...person, name: name } : person
             );
             setContestants(updatedContestants);
-        }
-    };
+        };
 
-    const recalculatePoints = () => {
-        //memoisation?????
-        const updatedContestants = contestants.map((person) => {
-            person.points = 0;
-            person.roundData.forEach((round) => {
-                person.points += pointsPerPosition.find(
-                    (position) => position.position == round.position
-                )!.points;
+        React.useEffect(() => {
+            recalculatePoints();
+        }, [pointsPerPosition]);
+
+        const handleRoundPositionChange = (
+            updatedPosition: number,
+            contestantId: string,
+            roundId: string
+        ) => {
+            const contestantToEdit = contestants.find(
+                (contestant) => contestant.id === contestantId
+            )!;
+            const updatedValues = updatePoints(
+                contestantToEdit,
+                updatedPosition,
+                roundId
+            );
+            if (updatedValues?.points && updatedValues.updatedRoundData) {
+                const updatedContestants = contestants.map((person) =>
+                    person.id === contestantToEdit.id
+                        ? {
+                              ...person,
+                              points: updatedValues.points,
+                              roundData: updatedValues.updatedRoundData
+                          }
+                        : person
+                );
+                setContestants(updatedContestants);
+            }
+        };
+
+        const recalculatePoints = () => {
+            //memoisation?????
+            const updatedContestants = contestants.map((person) => {
+                person.points = 0;
+                person.roundData.forEach((round) => {
+                    person.points += pointsPerPosition.find(
+                        (position) => position.position == round.position
+                    )!.points;
+                });
+                return person;
             });
-            return person;
-        });
 
-        setContestants(updatedContestants);
-    };
+            setContestants(updatedContestants);
+        };
 
-    const updatePoints = (
-        contestant: Contestant,
-        updatedPosition: number,
-        roundId: string
-    ) => {
-        const currentRoundData = contestant.roundData.find(
-            (data) => data.roundId === roundId
-        );
-        const newPosition = pointsPerPosition.find(
-            (pos) => updatedPosition === pos.position
-        );
-        const updatedRoundData: RoundData[] = contestant.roundData;
-        let points = contestant.points;
-        if (!currentRoundData && newPosition) {
-            points = contestant.points + newPosition.points;
-            const newRoundData: RoundData = {
-                roundId: roundId,
-                position: updatedPosition
-            };
-            updatedRoundData.push(newRoundData);
+        const updatePoints = (
+            contestant: Contestant,
+            updatedPosition: number,
+            roundId: string
+        ) => {
+            const currentRoundData = contestant.roundData.find(
+                (data) => data.roundId === roundId
+            );
+            const newPosition = pointsPerPosition.find(
+                (pos) => updatedPosition === pos.position
+            );
+            const updatedRoundData: RoundData[] = contestant.roundData;
+            let points = contestant.points;
+            if (!currentRoundData && newPosition) {
+                points = contestant.points + newPosition.points;
+                const newRoundData: RoundData = {
+                    roundId: roundId,
+                    position: updatedPosition
+                };
+                updatedRoundData.push(newRoundData);
+                return { points, updatedRoundData };
+            }
+            if (!currentRoundData) return; //recalculate maybe (map vs find)?
+            const previousPosition = pointsPerPosition.find(
+                (pos) => currentRoundData!.position === pos.position
+            );
+            if (previousPosition && newPosition) {
+                points =
+                    contestant.points -
+                    previousPosition.points +
+                    newPosition.points;
+                updatedRoundData.find(
+                    (round) => round.roundId === roundId
+                )!.position = updatedPosition;
+            } else if (newPosition) {
+                points = contestant.points + newPosition.points;
+                updatedRoundData.find(
+                    (round) => round.roundId === roundId
+                )!.position = updatedPosition;
+            }
+
             return { points, updatedRoundData };
-        }
-        if (!currentRoundData) return; //recalculate maybe (map vs find)?
-        const previousPosition = pointsPerPosition.find(
-            (pos) => currentRoundData!.position === pos.position
-        );
-        if (previousPosition && newPosition) {
-            points =
-                contestant.points -
-                previousPosition.points +
-                newPosition.points;
-            updatedRoundData.find(
-                (round) => round.roundId === roundId
-            )!.position = updatedPosition;
-        } else if (newPosition) {
-            points = contestant.points + newPosition.points;
-            updatedRoundData.find(
-                (round) => round.roundId === roundId
-            )!.position = updatedPosition;
-        }
+        };
 
-        return { points, updatedRoundData };
-    };
+        const pickAdornment = (position: number) => {
+            const currentPos = position.toString();
+            if (currentPos.endsWith("1")) {
+                return "st";
+            } else if (currentPos.endsWith("2")) {
+                return "nd";
+            } else if (currentPos.endsWith("3")) {
+                return "rd";
+            } else {
+                return "th";
+            }
+        };
 
-    const pickAdornment = (position: number) => {
-        const currentPos = position.toString();
-        if (currentPos.endsWith("1")) {
-            return "st";
-        } else if (currentPos.endsWith("2")) {
-            return "nd";
-        } else if (currentPos.endsWith("3")) {
-            return "rd";
-        } else {
-            return "th";
-        }
-    };
+        const deleteContestant = () => {
+            setContestants(
+                contestants.filter((person) => {
+                    return person !== contestant;
+                })
+            );
+        };
 
-    const deleteContestant = () => {
-        setContestants(
-            contestants.filter((person) => {
-                return person !== contestant;
-            })
-        );
-    };
-
-    return (
-        <>
-            <StyledTableRow
-                style={{ overflow: "scroll" }}
-                key={contestant.id}
-                sx={{ maxWidth: "200px" }}
-            >
-                <StyledTableCell className="position_cell" align="center">
-                    {position + 1}
-                </StyledTableCell>
-                <StyledTableCell className="name_cell" align="center">
-                    <NameInputField
-                        label={"Name"}
-                        value={contestant.name}
-                        onChange={function (value: string): void {
-                            handleNameChange(value, contestant.id);
-                        }}
-                        additionalProps={{
-                            placeholder: "Participator's name",
-                            style: {}
-                        }}
-                    />
-                </StyledTableCell>
-                {rounds.map((round, roundIndex) => (
-                    <StyledTableCell className="round_cell" align="center">
-                        {
-                            <NumberInputField
-                                label={"Position"}
-                                value={
-                                    contestant.roundData.find(
-                                        (contestantRound) =>
-                                            contestantRound.roundId === round.id
-                                    )?.position ?? 0
-                                }
-                                onChange={function (value: string): void {
-                                    handleRoundPositionChange(
-                                        Number(value),
-                                        contestant.id,
-                                        round.id
-                                    );
-                                }}
-                                additionalProps={{
-                                    sx: { maxWidth: "100px" },
-                                    placeholder: "Participator's position",
-                                    InputProps: {
-                                        endAdornment: (
-                                            <InputAdornment position="end">
-                                                {pickAdornment(
-                                                    contestant.roundData.find(
-                                                        (contestantRound) =>
-                                                            contestantRound.roundId ===
-                                                            round.id
-                                                    )?.position ?? 0
-                                                )}
-                                            </InputAdornment>
-                                        )
+        return (
+            <>
+                <StyledTableRow
+                    style={{ overflow: "scroll" }}
+                    key={contestant.id}
+                    sx={{ maxWidth: "200px" }}
+                >
+                    <StyledTableCell className="position_cell" align="center">
+                        {position + 1}
+                    </StyledTableCell>
+                    <StyledTableCell className="name_cell" align="center">
+                        <NameInputField
+                            label={"Name"}
+                            value={contestant.name}
+                            onChange={function (value: string): void {
+                                handleNameChange(value, contestant.id);
+                            }}
+                            additionalProps={{
+                                placeholder: "Participator's name",
+                                style: {}
+                            }}
+                        />
+                    </StyledTableCell>
+                    {rounds.map((round, roundIndex) => (
+                        <StyledTableCell className="round_cell" align="center">
+                            {
+                                <NumberInputField
+                                    label={"Position"}
+                                    value={
+                                        contestant.roundData.find(
+                                            (contestantRound) =>
+                                                contestantRound.roundId ===
+                                                round.id
+                                        )?.position ?? 0
                                     }
-                                }}
-                            />
+                                    onChange={function (value: string): void {
+                                        handleRoundPositionChange(
+                                            Number(value),
+                                            contestant.id,
+                                            round.id
+                                        );
+                                    }}
+                                    additionalProps={{
+                                        sx: { maxWidth: "100px" },
+                                        placeholder: "Participator's position",
+                                        InputProps: {
+                                            endAdornment: (
+                                                <InputAdornment position="end">
+                                                    {pickAdornment(
+                                                        contestant.roundData.find(
+                                                            (contestantRound) =>
+                                                                contestantRound.roundId ===
+                                                                round.id
+                                                        )?.position ?? 0
+                                                    )}
+                                                </InputAdornment>
+                                            )
+                                        }
+                                    }}
+                                />
+                            }
+                        </StyledTableCell>
+                    ))}
+                    <StyledTableCell className="points_cell" align="center">
+                        {contestant.points}
+                    </StyledTableCell>
+                    <StyledTableCell className="delete_cell" align="center">
+                        {
+                            <IconButton
+                                aria-label="delete"
+                                onClick={deleteContestant}
+                            >
+                                <DeleteIcon />
+                            </IconButton>
                         }
                     </StyledTableCell>
-                ))}
-                <StyledTableCell className="points_cell" align="center">
-                    {contestant.points}
-                </StyledTableCell>
-                <StyledTableCell className="delete_cell" align="center">
-                    {
-                        <IconButton
-                            aria-label="delete"
-                            onClick={deleteContestant}
-                        >
-                            <DeleteIcon />
-                        </IconButton>
-                    }
-                </StyledTableCell>
-            </StyledTableRow>
-        </>
-    );
-};
+                </StyledTableRow>
+            </>
+        );
+    }
+);

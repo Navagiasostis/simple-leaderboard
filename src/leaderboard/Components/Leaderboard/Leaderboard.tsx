@@ -9,8 +9,8 @@ import { Contestant } from "../../Models/Contestant";
 import { PointsPerPosition } from "../../Models/PointsPerPosition";
 import { Round } from "../../Models/Round";
 import HeaderButtons from "./HeaderButtons";
-import { initialRounds, initialPointsPerPosition } from "./TestData/Data";
-import { LeaderboardTable } from "./Table";
+import { initialRounds, initialPointsPerPosition } from "../../Data/Data";
+import { LeaderboardTable } from "./LeaderboardTable";
 
 type LeaderboardProps = {
     contestants: [

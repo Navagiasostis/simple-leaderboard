@@ -1,12 +1,20 @@
-import { Button, Dialog, DialogTitle, DialogContent, TextField, DialogActions } from "@mui/material";
+import {
+    Button,
+    Dialog,
+    DialogTitle,
+    DialogContent,
+    TextField,
+    DialogActions
+} from "@mui/material";
 import { useContext, useState } from "react";
 import SortIcon from "@mui/icons-material/Sort";
-import { PointsPerPosition } from "../../Models/PointsPerPosition";
-import { RaceDataContext } from "./Leaderboard";
+import { PointsPerPosition } from "../../../Models/PointsPerPosition";
+import { RaceDataContext } from "../Leaderboard";
 
 function PointsDialog() {
     const contextData = useContext(RaceDataContext);
-    const [pointsPerPosition, setPointsPerPosition] = contextData!.pointsPerPosition;
+    const [pointsPerPosition, setPointsPerPosition] =
+        contextData!.pointsPerPosition;
     const updatePoints = (points: PointsPerPosition, value: string) => {
         //useRef
         const updatedPointsPerPosition = pointsPerPosition.map((pointData) => {
@@ -23,7 +31,7 @@ function PointsDialog() {
         setPointsPerPosition(updatedPointsPerPosition);
     };
 
-    const [pointsDialogOpen, setPointsDialogOpen] = useState(false)
+    const [pointsDialogOpen, setPointsDialogOpen] = useState(false);
 
     const handleClose = () => {
         setPointsDialogOpen(false);

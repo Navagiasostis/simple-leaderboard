@@ -1,4 +1,4 @@
 export interface PointsPerPosition {
-    position: number
-    points: number
+    position: number;
+    points: number;
 }

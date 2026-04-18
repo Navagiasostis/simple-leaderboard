@@ -1,5 +1,5 @@
-import { PointsPerPosition } from "../../../Models/PointsPerPosition";
-import { Round } from "../../../Models/Round";
+import { PointsPerPosition } from "../Models/PointsPerPosition";
+import { Round } from "../Models/Round";
 
 export const initialRounds: Round[] = [
     { id: "0", name: "Spa" },
