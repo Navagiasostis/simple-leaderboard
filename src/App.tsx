@@ -1,9 +1,23 @@
 import "./App.css";
 import ResponsiveAppBar from "./leaderboard/Components/AppBar";
 import { Leaderboard } from "./leaderboard/Components/Leaderboard/Leaderboard";
+import { useState } from "react";
+import { Box, Button, Container, Stack, Typography } from "@mui/material";
 
 function App() {
-    //ISSUES: the update method on the ContestantRow doesnt work correctly. Check it out. Try to remove position 0/replace it with -
+    const [championships, setChampionships] = useState<string[]>([
+        crypto.randomUUID()
+    ]);
+
+    const addChampionship = () => {
+        setChampionships([...championships, crypto.randomUUID()]);
+    };
+
+    const removeChampionship = (id: string) => {
+        setChampionships(
+            championships.filter((championship) => championship !== id)
+        );
+    };
 
     // useEffect(() => {
     //   const numberOfAvailablePositions = contestants.length;
@@ -25,9 +39,37 @@ function App() {
             <header>
                 <ResponsiveAppBar />
             </header>
-            <body>
-                <Leaderboard/>
-            </body>
+            <main>
+                <Container maxWidth="xl" sx={{ py: 3 }}>
+                    <Box
+                        sx={{
+                            display: "flex",
+                            justifyContent: "space-between",
+                            alignItems: "center",
+                            flexWrap: "wrap",
+                            gap: 2,
+                            mb: 3
+                        }}
+                    >
+                        <Typography variant="h5" component="h2">
+                            Championships
+                        </Typography>
+                        <Button variant="contained" onClick={addChampionship}>
+                            Add Championship
+                        </Button>
+                    </Box>
+                    <Stack spacing={4}>
+                        {championships.map((id, index) => (
+                            <Leaderboard
+                                key={id}
+                                title={`Championship ${index + 1}`}
+                                showRemove
+                                onRemove={() => removeChampionship(id)}
+                            />
+                        ))}
+                    </Stack>
+                </Container>
+            </main>
         </>
     );
 }

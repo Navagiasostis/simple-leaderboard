@@ -22,6 +22,7 @@ const NameInputField: React.FC<NameInputFieldProps> = ({
         <TextField
             label={label}
             variant="outlined"
+            size="small"
             value={value}
             onChange={handleChange}
             {...additionalProps}

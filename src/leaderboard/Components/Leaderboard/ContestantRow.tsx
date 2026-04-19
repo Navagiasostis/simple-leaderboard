@@ -91,9 +91,10 @@ export const ContestantRow = ({
         const updatedContestants = contestants.map((person) => {
             person.points = 0;
             person.roundData.forEach((round) => {
-                person.points += pointsPerPosition.find(
-                    (position) => position.position == round.position
-                )!.points;
+                person.points +=
+                    pointsPerPosition.find(
+                        (position) => position.position === round.position
+                    )?.points ?? 0;
             });
             return person;
         });
@@ -106,42 +107,37 @@ export const ContestantRow = ({
         updatedPosition: number,
         roundId: string
     ) => {
-        const currentRoundData = contestant.roundData.find(
+        const updatedRoundData: RoundData[] = [...contestant.roundData];
+        const currentRoundIndex = updatedRoundData.findIndex(
             (data) => data.roundId === roundId
         );
+        const currentRoundData =
+            currentRoundIndex >= 0 ? updatedRoundData[currentRoundIndex] : null;
         const newPosition = pointsPerPosition.find(
             (pos) => updatedPosition === pos.position
         );
-        const updatedRoundData: RoundData[] = contestant.roundData;
+        const newPoints = newPosition?.points ?? 0;
         let points = contestant.points;
-        if (!currentRoundData && newPosition) {
-            points = contestant.points + newPosition.points;
+
+        if (!currentRoundData) {
             const newRoundData: RoundData = {
-                roundId: roundId,
+                roundId,
                 position: updatedPosition
             };
             updatedRoundData.push(newRoundData);
+            points = contestant.points + newPoints;
             return { points, updatedRoundData };
         }
-        if (!currentRoundData) return; //recalculate maybe (map vs find)?
-        const previousPosition = pointsPerPosition.find(
-            (pos) => currentRoundData!.position === pos.position
-        );
-        if (previousPosition && newPosition) {
-            points =
-                contestant.points -
-                previousPosition.points +
-                newPosition.points;
-            updatedRoundData.find(
-                (round) => round.roundId === roundId
-            )!.position = updatedPosition;
-        } else if (newPosition) {
-            points = contestant.points + newPosition.points;
-            updatedRoundData.find(
-                (round) => round.roundId === roundId
-            )!.position = updatedPosition;
-        }
 
+        const previousPosition = pointsPerPosition.find(
+            (pos) => currentRoundData.position === pos.position
+        );
+        const previousPoints = previousPosition?.points ?? 0;
+        points = contestant.points - previousPoints + newPoints;
+        updatedRoundData[currentRoundIndex] = {
+            ...currentRoundData,
+            position: updatedPosition
+        };
         return { points, updatedRoundData };
     };
 
@@ -168,15 +164,31 @@ export const ContestantRow = ({
 
     return (
         <>
-            <StyledTableRow
-                style={{ overflow: "scroll" }}
-                key={contestant.id}
-                sx={{ maxWidth: "200px" }}
-            >
-                <StyledTableCell className="position_cell" align="center">
+            <StyledTableRow key={contestant.id}>
+                <StyledTableCell
+                    className="position_cell"
+                    align="center"
+                    sx={{
+                        position: "sticky",
+                        left: 0,
+                        zIndex: 120,
+                        backgroundColor: "rgba(255,255,255,0.95)",
+                        borderRight: "1px solid rgba(0,0,0,0.08)"
+                    }}
+                >
                     {position + 1}
                 </StyledTableCell>
-                <StyledTableCell className="name_cell" align="center">
+                <StyledTableCell
+                    className="name_cell"
+                    align="center"
+                    sx={{
+                        position: "sticky",
+                        left: 50,
+                        zIndex: 120,
+                        backgroundColor: "rgba(255,255,255,0.95)",
+                        borderRight: "1px solid rgba(0,0,0,0.08)"
+                    }}
+                >
                     <NameInputField
                         label={"Name"}
                         value={contestant.name}
@@ -185,7 +197,8 @@ export const ContestantRow = ({
                         }}
                         additionalProps={{
                             placeholder: "Participator's name",
-                            style: {}
+                            size: "small",
+                            style: { minWidth: 120, maxWidth: 180 }
                         }}
                     />
                 </StyledTableCell>
@@ -208,7 +221,8 @@ export const ContestantRow = ({
                                     );
                                 }}
                                 additionalProps={{
-                                    sx: { maxWidth: "100px" },
+                                    size: "small",
+                                    sx: { maxWidth: "80px" },
                                     placeholder: "Participator's position",
                                     InputProps: {
                                         endAdornment: (
@@ -228,10 +242,30 @@ export const ContestantRow = ({
                         }
                     </StyledTableCell>
                 ))}
-                <StyledTableCell className="points_cell" align="center">
+                <StyledTableCell
+                    className="points_cell"
+                    align="center"
+                    sx={{
+                        position: "sticky",
+                        right: 50,
+                        zIndex: 120,
+                        backgroundColor: "rgba(255,255,255,0.95)",
+                        borderLeft: "1px solid rgba(0,0,0,0.08)"
+                    }}
+                >
                     {contestant.points}
                 </StyledTableCell>
-                <StyledTableCell className="delete_cell" align="center">
+                <StyledTableCell
+                    className="delete_cell"
+                    align="center"
+                    sx={{
+                        position: "sticky",
+                        right: 0,
+                        zIndex: 120,
+                        backgroundColor: "rgba(255,255,255,0.95)",
+                        borderLeft: "1px solid rgba(0,0,0,0.08)"
+                    }}
+                >
                     {
                         <IconButton
                             aria-label="delete"
