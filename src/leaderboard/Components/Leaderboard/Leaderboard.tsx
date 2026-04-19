@@ -12,7 +12,6 @@ import { Contestant } from "../../Models/Contestant";
 import { PointsPerPosition } from "../../Models/PointsPerPosition";
 import { Round } from "../../Models/Round";
 import HeaderButtons from "./HeaderButtons";
-import { initialRounds, initialPointsPerPosition } from "./TestData/Data";
 import { LeaderboardTable } from "./Table";
 
 type LeaderboardProps = {
@@ -44,11 +43,19 @@ export const Leaderboard = ({
 }: LeaderboardInstanceProps) => {
     const [championshipTitle, setChampionshipTitle] = useState(title);
     const [championshipDates, setChampionshipDates] = useState("");
-    const [rounds, setRounds] = useState<Round[]>(initialRounds);
+    const [rounds, setRounds] = useState<Round[]>([]);
     const [pointsPerPosition, setPointsPerPosition] = useState<
         PointsPerPosition[]
-    >(initialPointsPerPosition);
-    const [contestants, setContestants] = useState<Contestant[]>([]);
+    >([]);
+    const [contestants, setContestants] = useState<Contestant[]>([
+        { id: crypto.randomUUID(), name: "Alex", points: 0, roundData: [] },
+        { id: crypto.randomUUID(), name: "Thimios", points: 0, roundData: [] },
+        { id: crypto.randomUUID(), name: "Theo", points: 0, roundData: [] },
+        { id: crypto.randomUUID(), name: "Petros", points: 0, roundData: [] },
+        { id: crypto.randomUUID(), name: "Letos", points: 0, roundData: [] },
+        { id: crypto.randomUUID(), name: "Alexi", points: 0, roundData: [] },
+        { id: crypto.randomUUID(), name: "Takis", points: 0, roundData: [] }
+    ]);
     const RaceData = useMemo(() => {
         return {
             rounds: [rounds, setRounds],

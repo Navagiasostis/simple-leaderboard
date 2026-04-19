@@ -72,7 +72,7 @@ export const ContestantRow = ({
             updatedPosition,
             roundId
         );
-        if (updatedValues?.points && updatedValues.updatedRoundData) {
+        if (updatedValues?.updatedRoundData) {
             const updatedContestants = contestants.map((person) =>
                 person.id === contestantToEdit.id
                     ? {
